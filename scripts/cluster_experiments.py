@@ -29,10 +29,11 @@ from pso_kmeans import PSOKMeans
 
 # ── 评估单个 (算法, k) 组合 ────────────────────────────────────────────────────
 
-def _run_one(X, algo_name: str, k: int, random_state: int) -> dict:
+def _run_one(X, algo_name: str, k: int, random_state: int, pso_kwargs: dict = None) -> dict:
     start = time.perf_counter()
     if algo_name == "PSO-KMeans":
-        model = PSOKMeans(n_clusters=k, random_state=random_state)
+        kw = pso_kwargs or {}
+        model = PSOKMeans(n_clusters=k, random_state=random_state, **kw)
     elif algo_name == "K-Means++":
         model = KMeans(n_clusters=k, init="k-means++", n_init=20,
                        max_iter=300, random_state=random_state)
@@ -65,11 +66,11 @@ def evaluate_k_range(X, k_min: int, k_max: int, random_state: int = 42) -> pd.Da
 
 # ── 三算法对比 ─────────────────────────────────────────────────────────────────
 
-def compare_algorithms(X, k_values: List[int], random_state: int = 42) -> pd.DataFrame:
+def compare_algorithms(X, k_values: List[int], random_state: int = 42, pso_kwargs: dict = None) -> pd.DataFrame:
     rows = []
     for k in k_values:
         for algo in ["K-Means", "K-Means++", "PSO-KMeans"]:
-            rows.append(_run_one(X, algo, k, random_state))
+            rows.append(_run_one(X, algo, k, random_state, pso_kwargs))
     return pd.DataFrame(rows).sort_values(["k", "algorithm"]).reset_index(drop=True)
 
 
@@ -121,9 +122,12 @@ def run_experiment(
     compare_k: List[int],
     random_state: int,
     prefix: str,
+    pso_kwargs: dict = None,
 ) -> None:
     print(f"\n{'='*60}")
     print(f"数据集: {cfg.path}  前缀: {prefix or '(无)'}")
+    if pso_kwargs:
+        print(f"PSO 参数: {pso_kwargs}")
     print(f"{'='*60}")
 
     X, names, _ = prepare(cfg)
@@ -138,7 +142,7 @@ def run_experiment(
 
     # 2. 三算法对比
     print(f"\n[2/2] 三算法对比 k={compare_k} ...")
-    cmp_df = compare_algorithms(X.values, compare_k, random_state)
+    cmp_df = compare_algorithms(X.values, compare_k, random_state, pso_kwargs)
     cmp_df.to_csv(out_dir / f"{prefix}algorithm_comparison.csv", index=False, encoding="utf-8-sig")
     plot_comparison(cmp_df, out_dir, prefix)
     print(cmp_df.to_string(index=False))
@@ -162,9 +166,12 @@ def main():
 
     compare_k = [int(x.strip()) for x in args.compare_k.split(",")]
 
+    # val 集用强 PSO 参数（小数据集，搜索充分）
+    val_pso = {"n_particles": 50, "pso_max_iter": 100}
+
     if args.mode in ("val", "both"):
         run_experiment(VAL_CONFIG,   out_dir, args.k_min, args.k_max,
-                       compare_k, args.seed, prefix="val_")
+                       compare_k, args.seed, prefix="val_", pso_kwargs=val_pso)
 
     if args.mode in ("train", "both"):
         run_experiment(TRAIN_CONFIG, out_dir, args.k_min, args.k_max,

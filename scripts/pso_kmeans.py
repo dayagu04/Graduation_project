@@ -20,6 +20,7 @@ class PSOKMeans(BaseEstimator, ClusterMixin):
         self.cluster_centers_ = None
         self.labels_ = None
         self.inertia_ = None
+        self.convergence_history_ = None  # 每代 PSO 全局最优 SSE
 
     def _fitness(self, X, centroids):
         """计算适应度（误差平方和）"""
@@ -92,6 +93,8 @@ class PSOKMeans(BaseEstimator, ClusterMixin):
         personal_best_pos, personal_best_fit, global_best_pos, global_best_fit = \
             self._init_best_positions(X, particles_pos)
 
+        history = [float(global_best_fit)]  # 第 0 代（初始化）
+
         for iteration in range(self.pso_max_iter):
             particles_pos, particles_vel = self._update_particles(
                 particles_pos, particles_vel, personal_best_pos, global_best_pos, iteration
@@ -102,6 +105,9 @@ class PSOKMeans(BaseEstimator, ClusterMixin):
                     X, particles_pos, personal_best_pos, personal_best_fit,
                     global_best_pos, global_best_fit
                 )
+            history.append(float(global_best_fit))
+
+        self.convergence_history_ = np.array(history)
 
         from sklearn.cluster import KMeans
         kmeans = KMeans(
