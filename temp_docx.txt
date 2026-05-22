@@ -1,0 +1,50 @@
+﻿
+���Ʊ�ҵ����
+���ھ����㷨��ѧ���ɼ��������о�
+ѧԺ���ƣ�                      
+ѧ��������                      
+ָ����ʦ1��          ְ��       
+ר    ҵ��                       
+��    ����                       
+���ʱ�䣺                       
+
+                                  
+
+ԭ  ��  ��  ��  ��
+
+����֣������:���ʽ��ı�ҵ���(����)���Ǳ�����ָ����ʦ��ָ���¶����о���׫д�ĳɹ������(����)���������˵����ס����ݡ�ͼ�������ϣ����������(����)�м���˵��������֮�⣬�����(����)�����κ��������˻����Ѿ������׫д�ĳɹ���Ʒ���Ա����о�������Ҫ���׵ĸ��˺ͼ��壬����������������ȷ˵������ʾ��л�⡣�������ķ��ɽ���ɱ��˳е���
+�ش�������
+
+����ǩ����                     ǩ�����ڣ�   ��  ��  ��
+
+
+��  ��  AI  ��  ��  ʹ  ��  ��  ��  ��
+
+����֣���������ڱ���ҵ��Ƶ�׫д�����У�ʹ�����˹����ܸ������ߡ�����ʹ������������£�
+ʹ�ù��ߣ��������о���д�������У�ʹ����Gemini,ClaudeCode��Ϊ�������ߡ�
+ʹ�û�����Ŀ�ģ����������ߵ�Э���½����������������ܽᡢ�о�˼·��չ��������Եȡ����к����о�˼�롢ʵ����ơ����ݼ����������֤�߼������ս��۾��ɱ��˶�����ɡ�
+�˹����������Σ�����ʼ�ձ��ֶ��о��������ĸ����ݵ�����Ȩ��������AI���ɵ����ݽ������ϸ�ĺ�ʵ���жϡ��޸������ϡ�����ƣ����ģ����������ݴ�����˵�ѧ���۵����о������
+���ű�֤�������Ѱ���ѧ���淶�����������������вο����������ϡ�������ּ��͸��������˵���������ߵ�ʹ�������������Ⲣ��ŵ�����ĵ�ȫ�����ݳе��������Ρ�
+�ش�������
+
+����ǩ����                     ǩ�����ڣ�   ��  ��  ��
+
+
+��  л
+
+
+���ĸ�����ǻ����δ������������ѧ��֪ʶ��ǰ·��ȴʼ��ĬĬ�о٣��㾡���й�������������ѧ·��
+��ѧ�չ٣������߿�֮·�����ڱ�����ı����ǧ����������գ������ѧʶ�������Ӧ�������ľ����������۽磬���ҵ���������ӵ�и�������ѡ��
+ժ  Ҫ
+
+
+�����ҹ��ߵȽ�����ģ�ĳ��������������Ϣ�����ռ�����У����ϵͳ�����˺�����ѧ�����ݡ�Ȼ������ͳ�Ľ�ѧ������ϵ���������ڵ�һ����ĩ���������ܽ������ۣ���������ھ�ѧ��ѧҵ���ֱ���ĸ�����Ϊ���򣬵��¸��Ի���ѧ������Ч��չ��Ϊ����Ψ�����۵����۾��ޣ����о������������ھ�������ѧҵ������ϵ�������һ�ֻ�������Ⱥ�Ż��� K-Means �ںϣ�PSO-KMeans���ĸĽ��������ģ�͡�
+���ȣ����о��԰��� 14,003 ����ά�������칹�������ݼ������������ϴ�� Min-Max �����ٻ��������Ͻ���ѧ�������ۣ������Եع�����ѧҵ�ۺϵ÷���ѧϰЧ�ʵ������������������ӽǴӾ�̬�ɼ���̬��Ϊģʽƽ�ơ���Σ���Դ�ͳ K-Means �㷨�ڸ�ά��͹�ռ��м�������ֲ����Ž��ȱ�ݣ����о������� PSO �㷨��ȫ�����ʽ�������ơ�ʵ������������ͨ���ⲿ��������ϵ��ȷ����Ѿ������������ǰ���£�PSO-KMeans �㷨��Ч�˷��˴�ͳ�㷨�Ĳ����ԣ���������ƽ���ͣ�SSE���ľ�ֵ���׼����ﵽ����ˮƽ��ʵ���˶ϲ�ʽ�������ȶ��ԡ�
+��󣬱��о����Ż����ģ��Ͷ��ҵ��Ӧ�ã��ɹ�������������������Ϊ������ѧ��Ⱥ�塣ͨ����ά����ƫ��ȷ������֣�����ѧ����Ⱥ�ĺ���Ҫ�ز��Ǿ��Է��������Ǿ������������ּ���ʹ��ƫ�á�����Ⱥ�廭�񣬱������������Ե�ѧҵ������ѧ��Ԥ���ԣ������˴ӵײ��㷨Ѱ�ŵ�����������������ջ������о�����Ϊ��Уʵʩ���ʩ���ṩ������������֧�ţ�ҲΪ�����������µĽ�����ѧ�ĸ��ṩ�˿ɿ��ļ�����ʽ��
+�ؼ��ʣ����������ھ� K-Means������Ⱥ�Ż���ѧ���ɼ�����
+
+ABSTRACT
+
+
+With the continuous expansion of higher education and the popularization of educational informatization, massive amounts of student data have been accumulated in university academic systems. However, traditional teaching evaluation systems have long relied on a single final score for summative assessment, making it difficult to deeply mine the complex behavioral motivations behind students' academic performance, thereby hindering the effective implementation of personalized teaching. To break the limitations of score-centric evaluation, this study introduces Educational Data Miningtechnologies into the academic assessment system and proposes an improved clustering analysis model based on the fusion of Particle Swarm Optimization and K-Means (PSO-KMeans).
+Firstly, this study conducted deep cleaning and Min-Max dimensionless processing on a heterogeneous educational dataset containing 14,003 multi-dimensional samples. Guided by pedagogical prior theories, derived features such as Academic Composite Score and Study Efficiency were innovatively constructed, shifting the analytical perspective from static scores to dynamic behavioral patterns. Secondly, addressing the inherent defect of the traditional K-Means algorithm, which is highly susceptible to local optima in high-dimensional non-convex spaces, this study introduced the global heuristic search mechanism of the PSO algorithm. Experimental results demonstrate that, after determining the optimal number of clusters (K=4) via the Elbow Method and Silhouette Coefficient, the PSO-KMeans algorithm effectively overcame the volatility of traditional algorithms. Its mean and standard deviation of the Sum of Squared Errors (SSE) reached optimal levels, achieving exceptional convergence stability.

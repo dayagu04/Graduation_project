@@ -1,5 +1,6 @@
 #include "csv_reader.h"
 #include "kmeans.h"
+#include "pso_kmeans.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -63,7 +64,11 @@ void print_usage(const char* prog) {
         << "  --k <int>              Number of clusters (default: 4)\n"
         << "  --iters <int>          Max K-Means iterations (default: 100)\n"
         << "  --output <path>        Output CSV path (default: output/clustering_results.csv)\n"
-        << "  --no-normalize         Disable Min-Max normalization\n";
+        << "  --no-normalize         Disable Min-Max normalization\n"
+        << "  --algo <name>          Algorithm: kmeans++ (default) | pso-kmeans\n"
+        << "  --pso-particles <int>  PSO swarm size (default: 20)\n"
+        << "  --pso-iters <int>      PSO max iterations (default: 30)\n"
+        << "  --seed <int>           Random seed for PSO (default: 42)\n";
 }
 
 int main(int argc, char* argv[]) {
@@ -73,6 +78,10 @@ int main(int argc, char* argv[]) {
     std::string cols_str, skip_str;
     int k = 4, max_iters = 100;
     bool do_normalize = true;
+    std::string algo = "kmeans++";
+    int pso_particles = 20;
+    int pso_iters = 30;
+    unsigned int seed = 42;
 
     // ---- 解析命令行 ----
     for (int i = 1; i < argc; ++i) {
@@ -85,6 +94,10 @@ int main(int argc, char* argv[]) {
         else if (arg == "--iters"  && i+1 < argc) max_iters   = std::stoi(argv[++i]);
         else if (arg == "--output" && i+1 < argc) output_path = argv[++i];
         else if (arg == "--no-normalize") do_normalize = false;
+        else if (arg == "--algo"          && i+1 < argc) algo          = argv[++i];
+        else if (arg == "--pso-particles" && i+1 < argc) pso_particles = std::stoi(argv[++i]);
+        else if (arg == "--pso-iters"     && i+1 < argc) pso_iters     = std::stoi(argv[++i]);
+        else if (arg == "--seed"          && i+1 < argc) seed          = static_cast<unsigned int>(std::stoul(argv[++i]));
         else { std::cerr << "Unknown argument: " << arg << "\n"; print_usage(argv[0]); return 1; }
     }
 
@@ -111,11 +124,25 @@ int main(int argc, char* argv[]) {
     }
 
     // ---- 聚类 ----
-    std::cout << "Running K-Means++ with k=" << k << "...\n";
-    KMeans kmeans(k, max_iters);
-    kmeans.fit(ds.rows);
+    std::vector<Cluster> clusters;
+    std::vector<double> pso_history;
 
-    const auto& clusters = kmeans.get_clusters();
+    if (algo == "pso-kmeans" || algo == "pso") {
+        std::cout << "Running PSO-KMeans with k=" << k
+                  << " particles=" << pso_particles
+                  << " pso_iters=" << pso_iters << "...\n";
+        PSOKMeans pso(k, pso_particles, pso_iters, max_iters,
+                      0.729, 1.49445, 1.49445, seed);
+        pso.fit(ds.rows);
+        clusters = pso.get_clusters();
+        pso_history = pso.get_convergence_history();
+    } else {
+        std::cout << "Running K-Means++ with k=" << k << "...\n";
+        KMeans kmeans(k, max_iters);
+        kmeans.fit(ds.rows);
+        clusters = kmeans.get_clusters();
+    }
+
     double sse = compute_sse(ds.rows, clusters);
 
     std::cout << "\n=== Results ===\n";
@@ -143,5 +170,17 @@ int main(int argc, char* argv[]) {
         out << i << "," << assignments[i] << "\n";
 
     std::cout << "Saved to: " << output_path << "\n";
+
+    // ---- PSO 收敛曲线落盘（可选）----
+    if (!pso_history.empty()) {
+        std::string conv_path = output_path + ".pso_history.csv";
+        std::ofstream cf(conv_path);
+        if (cf.is_open()) {
+            cf << "iteration,global_best_sse\n";
+            for (size_t i = 0; i < pso_history.size(); ++i)
+                cf << i << "," << pso_history[i] << "\n";
+            std::cout << "PSO history saved to: " << conv_path << "\n";
+        }
+    }
     return 0;
 }
