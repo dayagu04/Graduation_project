@@ -311,7 +311,7 @@ def fig_deviation() -> None:
     y_pos = np.arange(len(KEY_FEATURES))[::-1]
     letters = ["a", "b", "c", "d"]
 
-    fig, axes = plt.subplots(2, 2, figsize=(18, 14))
+    fig, axes = plt.subplots(2, 2, figsize=(20, 16))
     axes = axes.flatten()
 
     for i in range(n_clusters):
@@ -327,28 +327,28 @@ def fig_deviation() -> None:
             ha = "left" if val >= 0 else "right"
             ax.text(bar.get_width() + (offset if val >= 0 else -offset),
                     bar.get_y() + bar.get_height() / 2,
-                    f"{val:+.3f}", va="center", ha=ha, fontsize=17,
+                    f"{val:+.3f}", va="center", ha=ha, fontsize=20,
                     fontweight="bold")
 
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(KEY_FEATURES, fontsize=20, fontweight="bold")
-        ax.tick_params(axis="x", labelsize=16)
+        ax.set_yticklabels(KEY_FEATURES, fontsize=24, fontweight="bold")
+        ax.tick_params(axis="x", labelsize=18)
         ax.set_xlim(-x_lim, x_lim)
-        ax.set_xlabel("相对全局均值的偏离量（归一化空间）", fontsize=18, fontweight="bold")
+        ax.set_xlabel("相对全局均值的偏离量（归一化空间）", fontsize=21, fontweight="bold")
         ax.set_title(
             f"{CLUSTER_NAMES[i]}  (n={cluster_sizes[i]}, "
             f"{cluster_sizes[i]/len(X_vals)*100:.1f}%)",
-            fontsize=20, pad=10, fontweight="bold",
+            fontsize=24, pad=10, fontweight="bold",
         )
         ax.grid(axis="x", alpha=0.3, linestyle="--")
-        ax.text(-x_lim * 0.97, -0.55, "低于均值", fontsize=16, color=neg_color,
+        ax.text(-x_lim * 0.97, -0.55, "低于均值", fontsize=19, color=neg_color,
                 ha="left", va="center", fontweight="bold")
-        ax.text(x_lim * 0.97, -0.55, "高于均值", fontsize=16, color=pos_color,
+        ax.text(x_lim * 0.97, -0.55, "高于均值", fontsize=19, color=pos_color,
                 ha="right", va="center", fontweight="bold")
-        add_subplot_label(ax, letters[i], fontsize=22)
+        add_subplot_label(ax, letters[i], fontsize=26)
 
     plt.suptitle("PSO-KMeans (k=4) 各簇关键特征质心相对全局均值偏离分析",
-                 fontsize=26, y=1.00, fontweight="bold")
+                 fontsize=30, y=1.00, fontweight="bold")
     plt.tight_layout()
     plt.savefig(RESULTS / "4_群体画像_均值偏离分析图.png",
                 dpi=300, bbox_inches="tight")
