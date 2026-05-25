@@ -41,22 +41,22 @@ def plot_feature_comparison(out_path: Path) -> None:
     X, names, _ = prepare(TRAIN_CONFIG)
     N = len(X)
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(16, 7))
 
     # (a) 原始特征空间：StudyHours × ExamScore
     x1, y1 = X["StudyHours"].values, X["ExamScore"].values
     r1 = np.corrcoef(x1, y1)[0, 1]
     ax = axes[0]
     ax.scatter(x1, y1, alpha=0.25, s=14, color="#1f77b4", edgecolors="none")
-    ax.set_xlabel("StudyHours", fontsize=16, fontweight="bold")
-    ax.set_ylabel("ExamScore", fontsize=16, fontweight="bold")
+    ax.set_xlabel("StudyHours", fontsize=22, fontweight="bold")
+    ax.set_ylabel("ExamScore", fontsize=22, fontweight="bold")
     ax.set_title("(a) 原始特征空间",
-                 fontsize=17, fontweight="bold", pad=12)
-    ax.tick_params(axis="both", labelsize=14)
+                 fontsize=24, fontweight="bold", pad=12)
+    ax.tick_params(axis="both", labelsize=18)
     ax.grid(alpha=0.3, linestyle="--")
     ax.text(0.03, 0.97,
             f"Pearson r = {r1:+.3f}\nN = {N}",
-            transform=ax.transAxes, fontsize=14,
+            transform=ax.transAxes, fontsize=18,
             va="top", ha="left",
             bbox=dict(boxstyle="round,pad=0.45", facecolor="white",
                       edgecolor="gray", alpha=0.9))
@@ -67,23 +67,23 @@ def plot_feature_comparison(out_path: Path) -> None:
     r2 = np.corrcoef(x2, y2)[0, 1]
     ax = axes[1]
     ax.scatter(x2, y2, alpha=0.25, s=14, color="#d62728", edgecolors="none")
-    ax.set_xlabel("study_efficiency", fontsize=16, fontweight="bold")
-    ax.set_ylabel("academic_composite", fontsize=16, fontweight="bold")
+    ax.set_xlabel("study_efficiency", fontsize=22, fontweight="bold")
+    ax.set_ylabel("academic_composite", fontsize=22, fontweight="bold")
     ax.set_title("(b) 衍生特征空间",
-                 fontsize=17, fontweight="bold", pad=12)
-    ax.tick_params(axis="both", labelsize=14)
+                 fontsize=24, fontweight="bold", pad=12)
+    ax.tick_params(axis="both", labelsize=18)
     ax.grid(alpha=0.3, linestyle="--")
     ax.text(0.03, 0.97,
             f"Pearson r = {r2:+.3f}\nN = {N}",
-            transform=ax.transAxes, fontsize=14,
+            transform=ax.transAxes, fontsize=18,
             va="top", ha="left",
             bbox=dict(boxstyle="round,pad=0.45", facecolor="white",
                       edgecolor="gray", alpha=0.9))
 
     plt.suptitle("原始特征与衍生特征空间对比分析",
-                 fontsize=20, y=1.02, fontweight="bold")
+                 fontsize=28, y=1.02, fontweight="bold")
     plt.tight_layout()
-    plt.savefig(out_path, dpi=200, bbox_inches="tight")
+    plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"  原始空间 r={r1:.4f}  衍生空间 r={r2:.4f}")
 

@@ -123,7 +123,7 @@ def plot_global_boxplot(df: pd.DataFrame, out_path: Path) -> None:
         lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
         outlier_counts[col] = int(((scaled[col] < lo) | (scaled[col] > hi)).sum())
 
-    fig, ax = plt.subplots(figsize=(14, 7))
+    fig, ax = plt.subplots(figsize=(16, 9))
     bp = ax.boxplot(
         [scaled[c].values for c in scaled.columns],
         labels=list(scaled.columns),
@@ -145,16 +145,16 @@ def plot_global_boxplot(df: pd.DataFrame, out_path: Path) -> None:
         n = outlier_counts[col]
         if n > 0:
             ax.text(i, 1.03, f"n={n}", ha="center", va="bottom",
-                    fontsize=11, color="#8b0000", rotation=0)
+                    fontsize=15, color="#8b0000", rotation=0)
 
     ax.set_title("训练集特征全局箱线图（Min-Max 归一化后，红点为离群点）",
-                 fontsize=18, pad=18, fontweight="bold")
-    ax.set_xlabel("特征", fontsize=15)
-    ax.set_ylabel("归一化取值 (0–1)", fontsize=15)
+                 fontsize=24, pad=18, fontweight="bold")
+    ax.set_xlabel("特征", fontsize=22)
+    ax.set_ylabel("归一化取值 (0–1)", fontsize=22)
     ax.set_ylim(-0.08, 1.12)
-    ax.tick_params(axis="y", labelsize=12)
+    ax.tick_params(axis="y", labelsize=16)
     ax.grid(axis="y", alpha=0.3)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=15)
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=20)
 
     # 图例说明
     from matplotlib.patches import Patch
@@ -165,11 +165,11 @@ def plot_global_boxplot(df: pd.DataFrame, out_path: Path) -> None:
         Line2D([0], [0], marker="o", color="w", markerfacecolor="#d62728",
                markeredgecolor="#8b0000", markersize=8, label="离群点 (>1.5·IQR)"),
     ]
-    ax.legend(handles=legend_elements, loc="upper right", fontsize=12,
+    ax.legend(handles=legend_elements, loc="upper right", fontsize=16,
               framealpha=0.9)
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
 
     # 控制台打印离群点统计

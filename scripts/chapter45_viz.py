@@ -151,18 +151,18 @@ def plot_pso_convergence(out_path: Path) -> None:
 
     iters = np.arange(len(history))  # 0..30
 
-    fig, ax = plt.subplots(figsize=(11, 6.5))
-    ax.plot(iters, history, marker="o", markersize=7,
-            linewidth=2.6, color="#1f4e79",
+    fig, ax = plt.subplots(figsize=(13, 8))
+    ax.plot(iters, history, marker="o", markersize=9,
+            linewidth=2.8, color="#1f4e79",
             label="PSO 全局最优 SSE")
     ax.fill_between(iters, history, history.max(),
                     alpha=0.12, color="#1f4e79")
 
     # 初始点 & 终点标注
     ax.scatter([iters[0]], [history[0]], color="#d62728",
-               s=130, zorder=5, label=f"初始化 SSE = {history[0]:.2f}")
+               s=150, zorder=5, label=f"初始化 SSE = {history[0]:.2f}")
     ax.scatter([iters[-1]], [history[-1]], color="#2ca02c",
-               s=130, zorder=5, label=f"PSO 收敛 SSE = {history[-1]:.2f}")
+               s=150, zorder=5, label=f"PSO 收敛 SSE = {history[-1]:.2f}")
     ax.axhline(final_sse, color="gray", linestyle="--", linewidth=1.6,
                label=f"K-Means 精细化后 SSE = {final_sse:.2f}")
 
@@ -177,21 +177,21 @@ def plot_pso_convergence(out_path: Path) -> None:
         f"下降比例 = {improve_pct:.2f}%"
     )
     ax.text(0.98, 0.97, textstr, transform=ax.transAxes,
-            fontsize=13, va="top", ha="right",
+            fontsize=18, va="top", ha="right",
             bbox=dict(boxstyle="round,pad=0.55", facecolor="white",
                       edgecolor="gray", alpha=0.92))
 
-    ax.set_xlabel("PSO 迭代次数", fontsize=15)
-    ax.set_ylabel("全局最优适应度 (SSE)", fontsize=15)
+    ax.set_xlabel("PSO 迭代次数", fontsize=22, fontweight="bold")
+    ax.set_ylabel("全局最优适应度 (SSE)", fontsize=22, fontweight="bold")
     ax.set_title("PSO-KMeans 全局最优 SSE 收敛曲线（k=4，训练集）",
-                 fontsize=17, pad=14, fontweight="bold")
+                 fontsize=26, pad=14, fontweight="bold")
     ax.set_xticks(np.arange(0, len(history), 2))
-    ax.tick_params(axis="both", labelsize=13)
+    ax.tick_params(axis="both", labelsize=18)
     ax.grid(alpha=0.35, linestyle="--")
-    ax.legend(loc="center right", fontsize=12.5, framealpha=0.92)
+    ax.legend(loc="center right", fontsize=17, framealpha=0.92)
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
 
     # 同时把收敛数据存一份 CSV，方便论文表格引用

@@ -32,7 +32,7 @@ def plot_heatmap_18d() -> None:
     df = pd.read_csv(CSV).drop(columns=["cluster"])
     corr = df.corr(method="pearson")
     mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
-    fig, ax = plt.subplots(figsize=(17, 15))
+    fig, ax = plt.subplots(figsize=(19, 17))
     sns.heatmap(
         corr,
         mask=~mask,  # show upper triangle only
@@ -42,7 +42,7 @@ def plot_heatmap_18d() -> None:
         vmax=1,
         annot=True,
         fmt=".2f",
-        annot_kws={"size": 14, "weight": "bold"},
+        annot_kws={"size": 16, "weight": "bold"},
         square=True,
         linewidths=0.6,
         linecolor="white",
@@ -50,14 +50,14 @@ def plot_heatmap_18d() -> None:
         ax=ax,
     )
     ax.set_title(f"训练集 {df.shape[1]} 维联合特征空间 Pearson 相关性矩阵热力图",
-                 fontsize=22, pad=18, fontweight="bold")
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=17, fontweight="bold")
-    plt.setp(ax.get_yticklabels(), rotation=0, fontsize=17, fontweight="bold")
+                 fontsize=26, pad=18, fontweight="bold")
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=20, fontweight="bold")
+    plt.setp(ax.get_yticklabels(), rotation=0, fontsize=20, fontweight="bold")
     cbar = ax.collections[0].colorbar
-    cbar.ax.tick_params(labelsize=15)
-    cbar.ax.yaxis.label.set_size(17)
+    cbar.ax.tick_params(labelsize=18)
+    cbar.ax.yaxis.label.set_size(20)
     plt.tight_layout()
-    fig.savefig(FIG_HEATMAP, dpi=200, bbox_inches="tight")
+    fig.savefig(FIG_HEATMAP, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"[heatmap] dims={df.shape[1]} -> {FIG_HEATMAP}")
 
@@ -67,20 +67,14 @@ def plot_silhouette_pso_k4() -> None:
     labels = df["cluster"].to_numpy()
     X = df.drop(columns=["cluster"]).to_numpy()
 
-    rng = np.random.default_rng(42)
-    sample_size = min(5000, len(X))
-    if len(X) > sample_size:
-        idx = rng.choice(len(X), size=sample_size, replace=False)
-        X_s, lbl_s = X[idx], labels[idx]
-    else:
-        X_s, lbl_s = X, labels
+    X_s, lbl_s = X, labels
 
     sil_vals = silhouette_samples(X_s, lbl_s)
     sil_avg = silhouette_score(X_s, lbl_s)
 
     cluster_ids = sorted(np.unique(lbl_s).tolist())
     n_clusters = len(cluster_ids)
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(14, 10))
 
     y_lower = 10
     for i, ck in enumerate(cluster_ids):
@@ -94,7 +88,7 @@ def plot_silhouette_pso_k4() -> None:
         ax.text(
             -0.12, y_lower + size_i / 2,
             f"Cluster {ck}\n(n={size_i}, μ={cluster_mean:.3f})",
-            ha="right", va="center", fontsize=14,
+            ha="right", va="center", fontsize=18,
             color=color, fontweight="bold",
         )
         y_lower = y_upper + 10
@@ -104,20 +98,20 @@ def plot_silhouette_pso_k4() -> None:
     ax.axvline(0, color="black", linewidth=1.2, alpha=0.5)
 
     ax.set_title(
-        f"PSO-KMeans (k={n_clusters}) 各簇轮廓系数分布（采样 {sample_size} / {len(X)}）",
-        fontsize=19, pad=16, fontweight="bold",
+        f"PSO-KMeans (k={n_clusters}) 各簇轮廓系数分布（全量 N={len(X)}）",
+        fontsize=24, pad=16, fontweight="bold",
     )
-    ax.set_xlabel("轮廓系数 (Silhouette Coefficient)", fontsize=17)
-    ax.set_ylabel("样本（按簇分组并升序排列）", fontsize=17)
+    ax.set_xlabel("轮廓系数 (Silhouette Coefficient)", fontsize=22)
+    ax.set_ylabel("样本（按簇分组并升序排列）", fontsize=22)
 
     x_min = min(-0.25, sil_vals.min() * 1.1)
     x_max = max(0.6, sil_vals.max() * 1.05)
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(0, y_lower)
     ax.set_yticks([])
-    ax.tick_params(axis="x", labelsize=14)
+    ax.tick_params(axis="x", labelsize=18)
     ax.grid(axis="x", alpha=0.3, linestyle="--")
-    ax.legend(loc="lower right", fontsize=15, framealpha=0.95)
+    ax.legend(loc="lower right", fontsize=18, framealpha=0.95)
 
     note = (
         "轮廓系数解释：\n"
@@ -127,13 +121,13 @@ def plot_silhouette_pso_k4() -> None:
     )
     ax.text(
         0.98, 0.98, note, transform=ax.transAxes,
-        fontsize=14, va="top", ha="right",
+        fontsize=17, va="top", ha="right",
         bbox=dict(boxstyle="round,pad=0.6", facecolor="#f8f8f8",
                   edgecolor="gray", alpha=0.95, linewidth=1.2),
     )
 
     plt.tight_layout()
-    fig.savefig(FIG_SILHOUETTE, dpi=200, bbox_inches="tight")
+    fig.savefig(FIG_SILHOUETTE, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"[silhouette] n={len(X_s)} k={n_clusters} avg={sil_avg:.4f} -> {FIG_SILHOUETTE}")
     for i, ck in enumerate(cluster_ids):

@@ -97,11 +97,11 @@ def main():
     out_dir.mkdir(exist_ok=True)
 
     k = 4  # 固定 k=4
-    n_runs = 10
+    n_runs = 50
 
     # ── val 数据集 ──
     print("\n" + "="*60)
-    print("val 数据集稳定性实验 (k=4, 10次运行)")
+    print("val 数据集稳定性实验 (k=4, 50次运行)")
     print("="*60)
 
     X_val, _, _ = prepare(VAL_CONFIG)
@@ -117,7 +117,7 @@ def main():
 
     # ── train 数据集 ──
     print("\n" + "="*60)
-    print("train 数据集稳定性实验 (k=4, 10次运行)")
+    print("train 数据集稳定性实验 (k=4, 50次运行)")
     print("="*60)
 
     X_train, _, _ = prepare(TRAIN_CONFIG)
