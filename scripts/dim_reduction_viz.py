@@ -91,17 +91,13 @@ def plot_feature_comparison(out_path: Path) -> None:
 # ── 图 2：PCA 线性映射聚类二维散点 ────────────────────────────────────────────
 
 def plot_pca_scatter(out_path: Path) -> None:
-    X, names, _ = prepare(TRAIN_CONFIG)
-    X_vals = X.values
-
-    model = PSOKMeans(n_clusters=4, n_particles=20, pso_max_iter=30,
-                      kmeans_max_iter=300, random_state=42)
-    model.fit(X_vals)
-    labels = model.labels_
-    centers = model.cluster_centers_
+    df = pd.read_csv(Path("output") / "clustering_result_k4.csv")
+    labels = df["cluster"].to_numpy()
+    X_vals = df.drop(columns=["cluster"]).to_numpy()
 
     pca = PCA(n_components=2, random_state=42)
     X_pca = pca.fit_transform(X_vals)
+    centers = np.vstack([X_vals[labels == i].mean(axis=0) for i in range(4)])
     centers_pca = pca.transform(centers)
 
     fig, ax = plt.subplots(figsize=(10, 7.5))
@@ -113,7 +109,6 @@ def plot_pca_scatter(out_path: Path) -> None:
                    edgecolors="none",
                    label=f"{CLUSTER_NAMES[i]}  (n={int(mask.sum())})")
 
-    # 聚类中心
     ax.scatter(centers_pca[:, 0], centers_pca[:, 1],
                c="black", marker="X", s=320,
                edgecolors="white", linewidth=2.2,
@@ -138,7 +133,7 @@ def plot_pca_scatter(out_path: Path) -> None:
                       edgecolor="gray", alpha=0.93))
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=200, bbox_inches="tight")
     plt.close()
     print(f"  PC1 方差占比 {pc1:.4f}  PC2 方差占比 {pc2:.4f}  累计 {pc1+pc2:.4f}")
 
@@ -146,13 +141,9 @@ def plot_pca_scatter(out_path: Path) -> None:
 # ── 图 3：t-SNE 非线性流形聚类二维散点 ────────────────────────────────────────
 
 def plot_tsne_scatter(out_path: Path, sample_size: int = 4000) -> None:
-    X, names, _ = prepare(TRAIN_CONFIG)
-    X_vals = X.values
-
-    model = PSOKMeans(n_clusters=4, n_particles=20, pso_max_iter=30,
-                      kmeans_max_iter=300, random_state=42)
-    model.fit(X_vals)
-    labels = model.labels_
+    df = pd.read_csv(Path("output") / "clustering_result_k4.csv")
+    labels = df["cluster"].to_numpy()
+    X_vals = df.drop(columns=["cluster"]).to_numpy()
 
     rng = np.random.default_rng(42)
     sample_size = min(sample_size, len(X_vals))
@@ -191,7 +182,7 @@ def plot_tsne_scatter(out_path: Path, sample_size: int = 4000) -> None:
                       edgecolor="gray", alpha=0.93))
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=200, bbox_inches="tight")
     plt.close()
 
 
