@@ -19,6 +19,7 @@ from sklearn.cluster import KMeans
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from feature_engineering import TRAIN_CONFIG, VAL_CONFIG, prepare
+from pso_kmeans import PSOKMeans
 
 matplotlib.rcParams["font.sans-serif"] = ["SimHei", "Microsoft YaHei"]
 matplotlib.rcParams["axes.unicode_minus"] = False
@@ -142,36 +143,38 @@ def fig_derived() -> None:
 def fig_k_eval() -> None:
     df = pd.read_csv("output/train_elbow_metrics.csv")
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    axes[0].plot(df["k"], df["sse"], marker="o", linewidth=2.6, color="#1f77b4",
-                 markersize=9)
-    axes[0].axvline(4, color="red", linestyle="--", linewidth=1.6, alpha=0.75,
+    axes[0].plot(df["k"], df["sse"], marker="o", linewidth=2.8, color="#1f77b4",
+                 markersize=11)
+    axes[0].axvline(4, color="red", linestyle="--", linewidth=2.0, alpha=0.8,
                     label="k=4（选定）")
-    axes[0].set_title("肘部法（Elbow Method, K-Means++）", fontsize=15, fontweight="bold")
-    axes[0].set_xlabel("k", fontsize=13)
-    axes[0].set_ylabel("SSE", fontsize=13)
-    axes[0].tick_params(axis="both", labelsize=11)
-    axes[0].legend(fontsize=12)
+    axes[0].set_title("肘部法（Elbow Method, K-Means++）", fontsize=18, fontweight="bold", pad=12)
+    axes[0].set_xlabel("k", fontsize=17, fontweight="bold")
+    axes[0].set_ylabel("SSE", fontsize=17, fontweight="bold")
+    axes[0].tick_params(axis="both", labelsize=15)
+    axes[0].ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    axes[0].yaxis.get_offset_text().set_fontsize(14)
+    axes[0].legend(fontsize=15)
     axes[0].grid(alpha=0.3)
-    add_subplot_label(axes[0], "a")
+    add_subplot_label(axes[0], "a", fontsize=18)
 
-    axes[1].plot(df["k"], df["silhouette"], marker="o", linewidth=2.6,
-                 color="#ff7f0e", markersize=9)
-    axes[1].axvline(4, color="red", linestyle="--", linewidth=1.6, alpha=0.75,
+    axes[1].plot(df["k"], df["silhouette"], marker="o", linewidth=2.8,
+                 color="#ff7f0e", markersize=11)
+    axes[1].axvline(4, color="red", linestyle="--", linewidth=2.0, alpha=0.8,
                     label="k=4（选定）")
-    axes[1].set_title("轮廓系数曲线（Silhouette Score）", fontsize=15, fontweight="bold")
-    axes[1].set_xlabel("k", fontsize=13)
-    axes[1].set_ylabel("Silhouette", fontsize=13)
-    axes[1].tick_params(axis="both", labelsize=11)
-    axes[1].legend(fontsize=12)
+    axes[1].set_title("轮廓系数曲线（Silhouette Score）", fontsize=18, fontweight="bold", pad=12)
+    axes[1].set_xlabel("k", fontsize=17, fontweight="bold")
+    axes[1].set_ylabel("Silhouette", fontsize=17, fontweight="bold")
+    axes[1].tick_params(axis="both", labelsize=15)
+    axes[1].legend(fontsize=15)
     axes[1].grid(alpha=0.3)
-    add_subplot_label(axes[1], "b")
+    add_subplot_label(axes[1], "b", fontsize=18)
 
-    plt.suptitle("最佳 K 值评估（训练集）", fontsize=18, y=1.02, fontweight="bold")
+    plt.suptitle("最佳 K 值评估（训练集）", fontsize=21, y=1.02, fontweight="bold")
     plt.tight_layout()
     plt.savefig(RESULTS / "2_算法对比_K值评估.png",
-                dpi=150, bbox_inches="tight")
+                dpi=200, bbox_inches="tight")
     plt.close()
     plt.close("all")
 
@@ -190,28 +193,31 @@ def fig_performance() -> None:
         ("calinski_harabasz", "Calinski-Harabasz",  "CH 指数（越大越好）",             "d"),
     ]
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 9))
+    fig, axes = plt.subplots(2, 2, figsize=(14, 11))
     axes = axes.flatten()
 
     for i, (col, ylabel, title, letter) in enumerate(metrics):
         ax = axes[i]
         for algo in algos:
             sub = df[df["algorithm"] == algo].sort_values("k")
-            ax.plot(sub["k"], sub[col], marker="o", linewidth=2.6,
-                    markersize=9, color=colors[algo], label=algo)
-        ax.set_title(title, fontsize=14, fontweight="bold")
-        ax.set_xlabel("k", fontsize=13)
-        ax.set_ylabel(ylabel, fontsize=13)
-        ax.tick_params(axis="both", labelsize=11)
-        ax.legend(fontsize=11)
+            ax.plot(sub["k"], sub[col], marker="o", linewidth=2.8,
+                    markersize=11, color=colors[algo], label=algo)
+        ax.set_title(title, fontsize=17, fontweight="bold", pad=12)
+        ax.set_xlabel("k", fontsize=16, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=16, fontweight="bold")
+        ax.tick_params(axis="both", labelsize=14)
+        if col in {"sse", "calinski_harabasz"}:
+            ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+            ax.yaxis.get_offset_text().set_fontsize(13)
+        ax.legend(fontsize=14)
         ax.grid(alpha=0.3)
-        add_subplot_label(ax, letter)
+        add_subplot_label(ax, letter, fontsize=18)
 
-    plt.suptitle("三算法性能对比（训练集，k=3,4,5）", fontsize=18, y=1.00,
+    plt.suptitle("三算法性能对比（训练集，k=3,4,5）", fontsize=21, y=1.00,
                  fontweight="bold")
     plt.tight_layout()
     plt.savefig(RESULTS / "2_算法对比_性能指标.png",
-                dpi=150, bbox_inches="tight")
+                dpi=200, bbox_inches="tight")
     plt.close()
 
 
@@ -223,43 +229,47 @@ def fig_stability() -> None:
     box_colors = ["#a6cee3", "#b2df8a", "#fb9a99"]
     line_colors = {"K-Means": "#1f77b4", "K-Means++": "#2ca02c", "PSO-KMeans": "#d62728"}
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(16, 7))
 
     # (a) 箱线图
     data_to_plot = [df[df["algorithm"] == a]["sse"].values for a in algos]
     bp = axes[0].boxplot(data_to_plot, labels=algos, patch_artist=True,
                          widths=0.55,
-                         medianprops=dict(color="black", linewidth=1.8))
+                         medianprops=dict(color="black", linewidth=2.0))
     for patch, c in zip(bp["boxes"], box_colors):
         patch.set_facecolor(c)
         patch.set_edgecolor("#333")
-    axes[0].set_ylabel("SSE", fontsize=13)
-    axes[0].set_title("SSE 分布箱线图（10 次独立运行，k=4）", fontsize=14,
-                      fontweight="bold")
-    axes[0].tick_params(axis="both", labelsize=12)
+    axes[0].set_ylabel("SSE", fontsize=17, fontweight="bold")
+    axes[0].set_title("SSE 分布箱线图（10 次独立运行，k=4）", fontsize=17,
+                      fontweight="bold", pad=12)
+    axes[0].tick_params(axis="both", labelsize=15)
+    axes[0].ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    axes[0].yaxis.get_offset_text().set_fontsize(14)
     axes[0].grid(axis="y", alpha=0.3)
-    add_subplot_label(axes[0], "a")
+    add_subplot_label(axes[0], "a", fontsize=18)
 
     # (b) 折线图：每次运行的波动
     for algo in algos:
         sub = df[df["algorithm"] == algo].sort_values("run")
-        axes[1].plot(sub["run"], sub["sse"], marker="o", linewidth=2.2,
-                     markersize=8, alpha=0.88, color=line_colors[algo],
+        axes[1].plot(sub["run"], sub["sse"], marker="o", linewidth=2.4,
+                     markersize=10, alpha=0.9, color=line_colors[algo],
                      label=algo)
-    axes[1].set_xlabel("运行编号 (Run)", fontsize=13)
-    axes[1].set_ylabel("SSE", fontsize=13)
-    axes[1].set_title("SSE 跨运行波动折线图", fontsize=14, fontweight="bold")
+    axes[1].set_xlabel("运行编号 (Run)", fontsize=17, fontweight="bold")
+    axes[1].set_ylabel("SSE", fontsize=17, fontweight="bold")
+    axes[1].set_title("SSE 跨运行波动折线图", fontsize=17, fontweight="bold", pad=12)
     axes[1].set_xticks(np.arange(1, df["run"].max() + 1))
-    axes[1].tick_params(axis="both", labelsize=11)
-    axes[1].legend(fontsize=11)
+    axes[1].tick_params(axis="both", labelsize=15)
+    axes[1].ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    axes[1].yaxis.get_offset_text().set_fontsize(14)
+    axes[1].legend(fontsize=14)
     axes[1].grid(alpha=0.3)
-    add_subplot_label(axes[1], "b")
+    add_subplot_label(axes[1], "b", fontsize=18)
 
-    plt.suptitle("三算法稳定性对比（训练集）", fontsize=18, y=1.02,
+    plt.suptitle("三算法稳定性对比（训练集）", fontsize=21, y=1.02,
                  fontweight="bold")
     plt.tight_layout()
     plt.savefig(RESULTS / "2_算法对比_稳定性.png",
-                dpi=150, bbox_inches="tight")
+                dpi=200, bbox_inches="tight")
     plt.close()
 
 
@@ -279,12 +289,12 @@ CLUSTER_NAMES = {
 
 
 def fig_deviation() -> None:
-    X, feature_names, _ = prepare(TRAIN_CONFIG)
-    X_vals = X.values
-
-    kmeans = KMeans(n_clusters=4, init="k-means++", n_init=20,
-                    max_iter=300, random_state=42)
-    labels = kmeans.fit_predict(X_vals)
+    # 读取论文第五章口径下的 PSO-KMeans (k=4) 聚类结果
+    df = pd.read_csv("output/clustering_result_k4.csv")
+    labels = df["cluster"].to_numpy()
+    feat_df = df.drop(columns=["cluster"])
+    feature_names = feat_df.columns.tolist()
+    X_vals = feat_df.to_numpy()
 
     n_clusters = 4
     centers = np.vstack([X_vals[labels == i].mean(axis=0) for i in range(n_clusters)])
@@ -297,11 +307,11 @@ def fig_deviation() -> None:
 
     pos_color, neg_color = "#d62728", "#1f77b4"
     x_abs = np.abs(deviations).max()
-    x_lim = x_abs * 1.25
+    x_lim = x_abs * 1.32
     y_pos = np.arange(len(KEY_FEATURES))[::-1]
     letters = ["a", "b", "c", "d"]
 
-    fig, axes = plt.subplots(2, 2, figsize=(12, 9))
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     axes = axes.flatten()
 
     for i in range(n_clusters):
@@ -309,37 +319,39 @@ def fig_deviation() -> None:
         dev = deviations[i]
         colors = [pos_color if v >= 0 else neg_color for v in dev]
         bars = ax.barh(y_pos, dev, color=colors, edgecolor="black",
-                       linewidth=0.6, alpha=0.85)
-        ax.axvline(0, color="black", linewidth=1.0)
+                       linewidth=0.8, alpha=0.88)
+        ax.axvline(0, color="black", linewidth=1.2)
 
         for bar, val in zip(bars, dev):
-            offset = x_abs * 0.015
+            offset = x_abs * 0.018
             ha = "left" if val >= 0 else "right"
             ax.text(bar.get_width() + (offset if val >= 0 else -offset),
                     bar.get_y() + bar.get_height() / 2,
-                    f"{val:+.3f}", va="center", ha=ha, fontsize=9.5)
+                    f"{val:+.3f}", va="center", ha=ha, fontsize=13,
+                    fontweight="bold")
 
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(KEY_FEATURES, fontsize=14)
+        ax.set_yticklabels(KEY_FEATURES, fontsize=16, fontweight="bold")
+        ax.tick_params(axis="x", labelsize=13)
         ax.set_xlim(-x_lim, x_lim)
-        ax.set_xlabel("相对全局均值的偏离量（归一化空间）", fontsize=10.5)
+        ax.set_xlabel("相对全局均值的偏离量（归一化空间）", fontsize=15, fontweight="bold")
         ax.set_title(
             f"{CLUSTER_NAMES[i]}  (n={cluster_sizes[i]}, "
             f"{cluster_sizes[i]/len(X_vals)*100:.1f}%)",
-            fontsize=12, pad=8,
+            fontsize=16, pad=10, fontweight="bold",
         )
         ax.grid(axis="x", alpha=0.3, linestyle="--")
-        ax.text(-x_lim * 0.97, -0.55, "低于均值", fontsize=9, color=neg_color,
+        ax.text(-x_lim * 0.97, -0.55, "低于均值", fontsize=12, color=neg_color,
                 ha="left", va="center", fontweight="bold")
-        ax.text(x_lim * 0.97, -0.55, "高于均值", fontsize=9, color=pos_color,
+        ax.text(x_lim * 0.97, -0.55, "高于均值", fontsize=12, color=pos_color,
                 ha="right", va="center", fontweight="bold")
-        add_subplot_label(ax, letters[i])
+        add_subplot_label(ax, letters[i], fontsize=18)
 
-    plt.suptitle("K-Means++ (k=4) 各簇质心相对全局均值偏离分析",
-                 fontsize=15, y=1.00)
+    plt.suptitle("PSO-KMeans (k=4) 各簇关键特征质心相对全局均值偏离分析",
+                 fontsize=20, y=1.00, fontweight="bold")
     plt.tight_layout()
     plt.savefig(RESULTS / "4_群体画像_均值偏离分析图.png",
-                dpi=150, bbox_inches="tight")
+                dpi=200, bbox_inches="tight")
     plt.close()
 
 

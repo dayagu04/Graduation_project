@@ -39,61 +39,53 @@ CLUSTER_NAMES = {
 
 def plot_feature_comparison(out_path: Path) -> None:
     X, names, _ = prepare(TRAIN_CONFIG)
+    N = len(X)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    # (a) 原始特征空间 PCA：仅用原始 6 列做 PCA 投影
-    orig_cols = ["StudyHours", "Attendance", "Age", "OnlineCourses",
-                 "AssignmentCompletion", "ExamScore"]
-    X_orig = X[orig_cols].values
-    pca_orig = PCA(n_components=2, random_state=42)
-    Z_orig = pca_orig.fit_transform(X_orig)
-    var_orig = sum(pca_orig.explained_variance_ratio_)
-
+    # (a) 原始特征空间：StudyHours × ExamScore
+    x1, y1 = X["StudyHours"].values, X["ExamScore"].values
+    r1 = np.corrcoef(x1, y1)[0, 1]
     ax = axes[0]
-    ax.scatter(Z_orig[:, 0], Z_orig[:, 1],
-               alpha=0.30, s=12, color="#1f77b4", edgecolors="none")
-    ax.set_xlabel("PC1", fontsize=14)
-    ax.set_ylabel("PC2", fontsize=14)
-    ax.set_title("(a) 原始特征空间 PCA 投影",
-                 fontsize=15, fontweight="bold", pad=10)
-    ax.tick_params(axis="both", labelsize=12)
+    ax.scatter(x1, y1, alpha=0.25, s=14, color="#1f77b4", edgecolors="none")
+    ax.set_xlabel("StudyHours", fontsize=16, fontweight="bold")
+    ax.set_ylabel("ExamScore", fontsize=16, fontweight="bold")
+    ax.set_title("(a) 原始特征空间",
+                 fontsize=17, fontweight="bold", pad=12)
+    ax.tick_params(axis="both", labelsize=14)
     ax.grid(alpha=0.3, linestyle="--")
     ax.text(0.03, 0.97,
-            f"累计方差 = {var_orig:.2%}\n特征数 = {len(orig_cols)}\nN = {len(X)}",
-            transform=ax.transAxes, fontsize=12,
+            f"Pearson r = {r1:+.3f}\nN = {N}",
+            transform=ax.transAxes, fontsize=14,
             va="top", ha="left",
             bbox=dict(boxstyle="round,pad=0.45", facecolor="white",
                       edgecolor="gray", alpha=0.9))
 
-    # (b) 含衍生特征空间 PCA：全部 8 列做 PCA 投影
-    X_all = X.values
-    pca_all = PCA(n_components=2, random_state=42)
-    Z_all = pca_all.fit_transform(X_all)
-    var_all = sum(pca_all.explained_variance_ratio_)
-
+    # (b) 衍生特征空间：study_efficiency × academic_composite
+    x2 = X["study_efficiency"].values
+    y2 = X["academic_composite"].values
+    r2 = np.corrcoef(x2, y2)[0, 1]
     ax = axes[1]
-    ax.scatter(Z_all[:, 0], Z_all[:, 1],
-               alpha=0.30, s=12, color="#d62728", edgecolors="none")
-    ax.set_xlabel("PC1", fontsize=14)
-    ax.set_ylabel("PC2", fontsize=14)
-    ax.set_title("(b) 含衍生特征空间 PCA 投影",
-                 fontsize=15, fontweight="bold", pad=10)
-    ax.tick_params(axis="both", labelsize=12)
+    ax.scatter(x2, y2, alpha=0.25, s=14, color="#d62728", edgecolors="none")
+    ax.set_xlabel("study_efficiency", fontsize=16, fontweight="bold")
+    ax.set_ylabel("academic_composite", fontsize=16, fontweight="bold")
+    ax.set_title("(b) 衍生特征空间",
+                 fontsize=17, fontweight="bold", pad=12)
+    ax.tick_params(axis="both", labelsize=14)
     ax.grid(alpha=0.3, linestyle="--")
     ax.text(0.03, 0.97,
-            f"累计方差 = {var_all:.2%}\n特征数 = {len(names)}\nN = {len(X)}",
-            transform=ax.transAxes, fontsize=12,
+            f"Pearson r = {r2:+.3f}\nN = {N}",
+            transform=ax.transAxes, fontsize=14,
             va="top", ha="left",
             bbox=dict(boxstyle="round,pad=0.45", facecolor="white",
                       edgecolor="gray", alpha=0.9))
 
-    plt.suptitle("原始特征空间与衍生特征空间 PCA 投影对比",
-                 fontsize=18, y=1.02, fontweight="bold")
+    plt.suptitle("原始特征与衍生特征空间对比分析",
+                 fontsize=20, y=1.02, fontweight="bold")
     plt.tight_layout()
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=200, bbox_inches="tight")
     plt.close()
-    print(f"  原始特征 累计方差={var_orig:.4f}  含衍生 累计方差={var_all:.4f}")
+    print(f"  原始空间 r={r1:.4f}  衍生空间 r={r2:.4f}")
 
 
 # ── 图 2：PCA 线性映射聚类二维散点 ────────────────────────────────────────────
