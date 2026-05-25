@@ -49,7 +49,7 @@ def plot_silhouette(out_path: Path) -> None:
     sil_vals = silhouette_samples(X_sub, y_sub)
 
     n_clusters = 4
-    fig, ax = plt.subplots(figsize=(11, 7.5))
+    fig, ax = plt.subplots(figsize=(12, 8))
 
     y_lower = 10
     tick_positions = []
@@ -64,51 +64,54 @@ def plot_silhouette(out_path: Path) -> None:
             facecolor=CLUSTER_COLORS[i], edgecolor=CLUSTER_COLORS[i],
             alpha=0.78,
         )
-        # 簇内均值 + 占比
+        # 簇内均值 + 占比（放在左侧，避免与刀刃重叠）
         cluster_mean = cluster_sil.mean()
         ax.text(
-            -0.015, y_lower + size_i / 2,
+            -0.12, y_lower + size_i / 2,
             f"Cluster {i}\n(n={size_i}, μ={cluster_mean:.3f})",
-            ha="right", va="center", fontsize=10,
+            ha="right", va="center", fontsize=14,
             color=CLUSTER_COLORS[i], fontweight="bold",
         )
         tick_positions.append(y_lower + size_i / 2)
         y_lower = y_upper + 10
 
-    ax.axvline(sil_mean, color="red", linestyle="--", linewidth=1.8,
+    ax.axvline(sil_mean, color="red", linestyle="--", linewidth=2.2,
                label=f"平均轮廓系数 = {sil_mean:.4f}")
-    ax.axvline(0, color="black", linewidth=0.8, alpha=0.4)
+    ax.axvline(0, color="black", linewidth=1.2, alpha=0.5)
 
-    ax.set_xlabel("轮廓系数 (Silhouette Coefficient)", fontsize=12)
-    ax.set_ylabel("样本（按簇分组并升序排列）", fontsize=12)
+    ax.set_xlabel("轮廓系数 (Silhouette Coefficient)", fontsize=17)
+    ax.set_ylabel("样本（按簇分组并升序排列）", fontsize=17)
     ax.set_title(
         f"K-Means++ (k=4) 各簇轮廓系数分布（采样 {sample_size} / {len(X_vals)}）",
-        fontsize=14, pad=12,
+        fontsize=19, pad=16, fontweight="bold",
     )
 
-    x_min = min(-0.1, sil_vals.min() * 1.1)
+    # 扩大左侧空间，确保文字不越界
+    x_min = min(-0.25, sil_vals.min() * 1.1)
     x_max = max(0.6, sil_vals.max() * 1.05)
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(0, y_lower)
     ax.set_yticks([])
+    ax.tick_params(axis="x", labelsize=14)
     ax.grid(axis="x", alpha=0.3, linestyle="--")
-    ax.legend(loc="lower right", fontsize=11, framealpha=0.95)
+    ax.legend(loc="lower right", fontsize=15, framealpha=0.95)
 
-    # 额外注释：正/负轮廓系数含义
+    # 额外注释：正/负轮廓系数含义（移到右上角，避免遮挡刀刃）
     note = (
-        "· 轮廓系数 > 0：样本与本簇相似度高于其他簇\n"
-        "· 轮廓系数 < 0：样本可能被错分到当前簇\n"
+        "轮廓系数解释：\n"
+        "· > 0：样本与本簇相似度高于其他簇\n"
+        "· < 0：样本可能被错分到当前簇\n"
         "· 刀刃越长越厚 → 簇越紧密"
     )
     ax.text(
-        0.02, 0.98, note, transform=ax.transAxes,
-        fontsize=9.5, va="top", ha="left",
-        bbox=dict(boxstyle="round,pad=0.45", facecolor="#f8f8f8",
-                  edgecolor="gray", alpha=0.9),
+        0.98, 0.98, note, transform=ax.transAxes,
+        fontsize=14, va="top", ha="right",
+        bbox=dict(boxstyle="round,pad=0.6", facecolor="#f8f8f8",
+                  edgecolor="gray", alpha=0.95, linewidth=1.2),
     )
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
     print(f"  平均轮廓系数: {sil_mean:.4f}")

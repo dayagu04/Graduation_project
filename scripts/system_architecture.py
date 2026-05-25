@@ -93,12 +93,12 @@ def draw_node(ax, label: str, x: float, y: float, color: str) -> None:
         (x - NODE_W / 2, y - NODE_H / 2),
         NODE_W, NODE_H,
         boxstyle="round,pad=0.06,rounding_size=0.18",
-        linewidth=1.4, edgecolor="#333333",
+        linewidth=1.6, edgecolor="#333333",
         facecolor=color, alpha=0.92,
     )
     ax.add_patch(box)
     ax.text(x, y, label, ha="center", va="center",
-            fontsize=10.5, color="white", fontweight="bold")
+            fontsize=14, color="white", fontweight="bold")
 
 
 def draw_layer(ax, y_bot: float, y_top: float,
@@ -106,13 +106,13 @@ def draw_layer(ax, y_bot: float, y_top: float,
     rect = FancyBboxPatch(
         (0.5, y_bot), CANVAS_W - 1.0, y_top - y_bot,
         boxstyle="round,pad=0.05,rounding_size=0.25",
-        linewidth=1.8, edgecolor=edge,
+        linewidth=2.0, edgecolor=edge,
         facecolor=fill, alpha=0.55,
     )
     ax.add_patch(rect)
     ax.text(
         0.9, y_top - 0.30, title,
-        fontsize=13, color=title_color, fontweight="bold",
+        fontsize=17, color=title_color, fontweight="bold",
         ha="left", va="center",
     )
 
@@ -128,7 +128,7 @@ def draw_arrow(ax, x1, y1, x2, y2, color="#333333", lw=1.6,
 
 
 def plot_architecture(out_path: Path) -> None:
-    fig, ax = plt.subplots(figsize=(15.5, 11.0))
+    fig, ax = plt.subplots(figsize=(12.0, 9.0))
     ax.set_xlim(0, CANVAS_W)
     ax.set_ylim(0, CANVAS_H + 0.6)
     ax.axis("off")
@@ -171,7 +171,7 @@ def plot_architecture(out_path: Path) -> None:
             ax.text(
                 sx + 0.25, mid_y,
                 "数据流 / Data Flow",
-                fontsize=10, color="#c0392b",
+                fontsize=13, color="#c0392b",
                 va="center", ha="left", fontweight="bold",
                 rotation=90,
             )
@@ -189,14 +189,14 @@ def plot_architecture(out_path: Path) -> None:
                         linewidth=2.0, mutation_scale=22),
     )
     ax.text(0.08, 6.0, "数据 → 分析 → 应用",
-            fontsize=11, color="#555555", fontweight="bold",
+            fontsize=14, color="#555555", fontweight="bold",
             rotation=90, ha="center", va="center")
 
     # 5. 标题
     ax.text(
         CANVAS_W / 2, CANVAS_H + 0.35,
         "学生成绩聚类分析原型系统架构图",
-        fontsize=17, fontweight="bold", ha="center", va="center",
+        fontsize=22, fontweight="bold", ha="center", va="center",
         color="#222222",
     )
 
@@ -209,12 +209,12 @@ def plot_architecture(out_path: Path) -> None:
     ax.legend(
         handles=legend_handles,
         loc="lower right", bbox_to_anchor=(0.985, 0.005),
-        fontsize=10, frameon=True, framealpha=0.92,
-        title="模块类别", title_fontsize=10,
+        fontsize=13, frameon=True, framealpha=0.92,
+        title="模块类别", title_fontsize=13,
     )
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
 

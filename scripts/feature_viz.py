@@ -68,7 +68,7 @@ def plot_kde(df: pd.DataFrame, out_path: Path) -> None:
     plt.suptitle("训练集关键特征核密度估计（KDE）分布检验",
                  fontsize=15, y=1.00)
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
 
@@ -80,22 +80,25 @@ def plot_corr_heatmap(df: pd.DataFrame, out_path: Path) -> None:
 
     mask = np.triu(np.ones_like(corr, dtype=bool), k=1)
 
-    fig, ax = plt.subplots(figsize=(12, 10))
+    fig, ax = plt.subplots(figsize=(11, 10))
     sns.heatmap(
         corr, mask=mask,
         annot=True, fmt=".2f",
         cmap="RdBu_r", center=0, vmin=-1, vmax=1,
         square=True, linewidths=0.6, linecolor="white",
         cbar_kws={"shrink": 0.75, "label": "Pearson 相关系数"},
-        annot_kws={"size": 9},
+        annot_kws={"size": 12},
         ax=ax,
     )
     ax.set_title("训练集特征 Pearson 相关性矩阵（下三角）",
-                 fontsize=14, pad=15)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=10)
-    plt.setp(ax.get_yticklabels(), rotation=0, fontsize=10)
+                 fontsize=18, pad=15, fontweight="bold")
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=13)
+    plt.setp(ax.get_yticklabels(), rotation=0, fontsize=13)
+    cbar = ax.collections[0].colorbar
+    cbar.ax.tick_params(labelsize=12)
+    cbar.ax.yaxis.label.set_size(14)
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
 
@@ -120,7 +123,7 @@ def plot_global_boxplot(df: pd.DataFrame, out_path: Path) -> None:
         lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
         outlier_counts[col] = int(((scaled[col] < lo) | (scaled[col] > hi)).sum())
 
-    fig, ax = plt.subplots(figsize=(15, 7))
+    fig, ax = plt.subplots(figsize=(14, 7))
     bp = ax.boxplot(
         [scaled[c].values for c in scaled.columns],
         labels=list(scaled.columns),
@@ -128,13 +131,13 @@ def plot_global_boxplot(df: pd.DataFrame, out_path: Path) -> None:
         showfliers=True,
         flierprops=dict(
             marker="o", markerfacecolor="#d62728",
-            markersize=3.5, markeredgecolor="#8b0000",
-            alpha=0.5,
+            markersize=4, markeredgecolor="#8b0000",
+            alpha=0.55,
         ),
-        medianprops=dict(color="black", linewidth=1.6),
-        boxprops=dict(facecolor="#a6cee3", edgecolor="#1f4e79", linewidth=1.1),
-        whiskerprops=dict(color="#1f4e79", linewidth=1.1),
-        capprops=dict(color="#1f4e79", linewidth=1.1),
+        medianprops=dict(color="black", linewidth=1.8),
+        boxprops=dict(facecolor="#a6cee3", edgecolor="#1f4e79", linewidth=1.3),
+        whiskerprops=dict(color="#1f4e79", linewidth=1.3),
+        capprops=dict(color="#1f4e79", linewidth=1.3),
     )
 
     # 在每个箱子上方标注离群点数量
@@ -142,30 +145,31 @@ def plot_global_boxplot(df: pd.DataFrame, out_path: Path) -> None:
         n = outlier_counts[col]
         if n > 0:
             ax.text(i, 1.03, f"n={n}", ha="center", va="bottom",
-                    fontsize=8, color="#8b0000", rotation=0)
+                    fontsize=11, color="#8b0000", rotation=0)
 
     ax.set_title("训练集特征全局箱线图（Min-Max 归一化后，红点为离群点）",
-                 fontsize=14, pad=18)
-    ax.set_xlabel("特征", fontsize=12)
-    ax.set_ylabel("归一化取值 (0–1)", fontsize=12)
+                 fontsize=18, pad=18, fontweight="bold")
+    ax.set_xlabel("特征", fontsize=15)
+    ax.set_ylabel("归一化取值 (0–1)", fontsize=15)
     ax.set_ylim(-0.08, 1.12)
+    ax.tick_params(axis="y", labelsize=12)
     ax.grid(axis="y", alpha=0.3)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=10)
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", fontsize=15)
 
     # 图例说明
     from matplotlib.patches import Patch
     from matplotlib.lines import Line2D
     legend_elements = [
         Patch(facecolor="#a6cee3", edgecolor="#1f4e79", label="IQR 箱体"),
-        Line2D([0], [0], color="black", linewidth=1.6, label="中位数"),
+        Line2D([0], [0], color="black", linewidth=1.8, label="中位数"),
         Line2D([0], [0], marker="o", color="w", markerfacecolor="#d62728",
-               markeredgecolor="#8b0000", markersize=6, label="离群点 (>1.5·IQR)"),
+               markeredgecolor="#8b0000", markersize=8, label="离群点 (>1.5·IQR)"),
     ]
-    ax.legend(handles=legend_elements, loc="upper right", fontsize=10,
+    ax.legend(handles=legend_elements, loc="upper right", fontsize=12,
               framealpha=0.9)
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
     # 控制台打印离群点统计

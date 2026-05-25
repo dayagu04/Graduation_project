@@ -35,12 +35,13 @@ def plot_deviation_bars(out_path: Path) -> None:
     X, feature_names, _ = prepare(TRAIN_CONFIG)
     X_vals = X.values
 
-    # k=4 K-Means++ 质心复现（与第五章保持一致）
-    kmeans = KMeans(
-        n_clusters=4, init="k-means++", n_init=20,
-        max_iter=300, random_state=42,
+    # k=4 PSO-KMeans 融合聚类（与论文第五章口径保持一致）
+    model = PSOKMeans(
+        n_clusters=4, n_particles=20, pso_max_iter=30,
+        kmeans_max_iter=300, random_state=42,
     )
-    labels = kmeans.fit_predict(X_vals)
+    model.fit(X_vals)
+    labels = model.labels_
 
     # 按簇取样本均值（与 cluster_centers_k4.csv 构建方式一致）
     n_clusters = 4
@@ -68,7 +69,7 @@ def plot_deviation_bars(out_path: Path) -> None:
     print(dev_df.round(4).to_string())
 
     # 2x2 子图
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    fig, axes = plt.subplots(2, 2, figsize=(18, 13))
     axes = axes.flatten()
 
     pos_color = "#d62728"   # 正偏（高于均值）→ 暖色
@@ -104,32 +105,33 @@ def plot_deviation_bars(out_path: Path) -> None:
             ha = "left" if val >= 0 else "right"
             ax.text(x + (offset if val >= 0 else -offset),
                     bar.get_y() + bar.get_height() / 2,
-                    f"{val:+.3f}", va="center", ha=ha, fontsize=9.5)
+                    f"{val:+.3f}", va="center", ha=ha, fontsize=13)
 
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(feat_labels, fontsize=10.5)
+        ax.set_yticklabels(feat_labels, fontsize=14)
+        ax.tick_params(axis="x", labelsize=12)
         ax.set_xlim(-x_lim, x_lim)
-        ax.set_xlabel("相对全局均值的偏离量（归一化空间）", fontsize=10.5)
+        ax.set_xlabel("相对全局均值的偏离量（归一化空间）", fontsize=14)
         ax.set_title(
             f"{cluster_names[i]}  (n={cluster_sizes[i]}, {cluster_sizes[i]/len(X_vals)*100:.1f}%)",
-            fontsize=12, pad=8,
+            fontsize=15, pad=10, fontweight="bold",
         )
         ax.grid(axis="x", alpha=0.3, linestyle="--")
 
         # 左右两侧加方向提示
         ax.text(-x_lim * 0.97, -0.55, "低于均值",
-                fontsize=9, color=neg_color, ha="left", va="center",
+                fontsize=12, color=neg_color, ha="left", va="center",
                 fontweight="bold")
         ax.text(x_lim * 0.97, -0.55, "高于均值",
-                fontsize=9, color=pos_color, ha="right", va="center",
+                fontsize=12, color=pos_color, ha="right", va="center",
                 fontweight="bold")
 
     plt.suptitle(
-        "K-Means++ (k=4) 各簇质心相对全局均值偏离分析",
-        fontsize=15, y=1.00,
+        "PSO-KMeans (k=4) 各簇关键特征质心相对全局均值偏离分析",
+        fontsize=19, y=1.00, fontweight="bold",
     )
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
 
@@ -149,19 +151,19 @@ def plot_pso_convergence(out_path: Path) -> None:
 
     iters = np.arange(len(history))  # 0..30
 
-    fig, ax = plt.subplots(figsize=(11, 6.2))
-    ax.plot(iters, history, marker="o", markersize=5,
-            linewidth=2.2, color="#1f4e79",
+    fig, ax = plt.subplots(figsize=(11, 6.5))
+    ax.plot(iters, history, marker="o", markersize=7,
+            linewidth=2.6, color="#1f4e79",
             label="PSO 全局最优 SSE")
     ax.fill_between(iters, history, history.max(),
                     alpha=0.12, color="#1f4e79")
 
     # 初始点 & 终点标注
     ax.scatter([iters[0]], [history[0]], color="#d62728",
-               s=90, zorder=5, label=f"初始化 SSE = {history[0]:.2f}")
+               s=130, zorder=5, label=f"初始化 SSE = {history[0]:.2f}")
     ax.scatter([iters[-1]], [history[-1]], color="#2ca02c",
-               s=90, zorder=5, label=f"PSO 收敛 SSE = {history[-1]:.2f}")
-    ax.axhline(final_sse, color="gray", linestyle="--", linewidth=1.2,
+               s=130, zorder=5, label=f"PSO 收敛 SSE = {history[-1]:.2f}")
+    ax.axhline(final_sse, color="gray", linestyle="--", linewidth=1.6,
                label=f"K-Means 精细化后 SSE = {final_sse:.2f}")
 
     improve = history[0] - history[-1]
@@ -175,20 +177,21 @@ def plot_pso_convergence(out_path: Path) -> None:
         f"下降比例 = {improve_pct:.2f}%"
     )
     ax.text(0.98, 0.97, textstr, transform=ax.transAxes,
-            fontsize=10, va="top", ha="right",
-            bbox=dict(boxstyle="round,pad=0.5", facecolor="white",
+            fontsize=13, va="top", ha="right",
+            bbox=dict(boxstyle="round,pad=0.55", facecolor="white",
                       edgecolor="gray", alpha=0.92))
 
-    ax.set_xlabel("PSO 迭代次数", fontsize=12)
-    ax.set_ylabel("全局最优适应度 (SSE)", fontsize=12)
+    ax.set_xlabel("PSO 迭代次数", fontsize=15)
+    ax.set_ylabel("全局最优适应度 (SSE)", fontsize=15)
     ax.set_title("PSO-KMeans 全局最优 SSE 收敛曲线（k=4，训练集）",
-                 fontsize=14, pad=12)
+                 fontsize=17, pad=14, fontweight="bold")
     ax.set_xticks(np.arange(0, len(history), 2))
+    ax.tick_params(axis="both", labelsize=13)
     ax.grid(alpha=0.35, linestyle="--")
-    ax.legend(loc="center right", fontsize=10, framealpha=0.92)
+    ax.legend(loc="center right", fontsize=12.5, framealpha=0.92)
 
     plt.tight_layout()
-    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close()
 
     # 同时把收敛数据存一份 CSV，方便论文表格引用
