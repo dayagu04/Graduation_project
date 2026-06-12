@@ -33,8 +33,10 @@ class DatasetConfig:
 # 两个数据集的默认配置
 TRAIN_CONFIG = DatasetConfig(
     path="data/train-data.csv",
-    # 全部 16 列均为数值，直接全用
-    skip_cols=[],
+    # 连续特征 + 衍生特征，排除二值/低基数分类特征和目标变量
+    feature_cols=["StudyHours", "Attendance", "Age", "OnlineCourses",
+                  "AssignmentCompletion", "ExamScore",
+                  "academic_composite", "study_efficiency"],
 )
 
 VAL_CONFIG = DatasetConfig(

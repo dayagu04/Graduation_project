@@ -1,100 +1,64 @@
-# Graduation_project
+# 基于聚类算法的学生成绩分析与研究
 
-毕业论文项目：基于聚类的教育数据分析（K-Means / K-Means++ / PSO-KMeans）
+毕业论文项目：使用 K-Means / K-Means++ / PSO-KMeans 对学生学业数据进行聚类分析，构建群体画像并提供学业诊断。
 
-## 📋 项目文档
-
-- [任务书](md文档/任务书.md) - 课题要求与成果
-- [开题报告](md文档/开题报告.md) - 研究背景与方案
-- [论文大纲](md文档/大纲.md) - 论文结构规划
-- [工作进度记录](md文档/工作进度记录.md) - 每周工作进展 ⭐ 最新
-
-## 🎯 最新进展（第 6-7 周）
-
-✅ 完成特征工程（4 个衍生特征）  
-✅ 实现 PSO-KMeans 融合算法  
-✅ 完成算法对比实验  
-✅ 实现群体画像与学业诊断  
-✅ 构建 Streamlit 原型系统  
-✅ 生成 14 张高质量可视化图表
-
-**查看详细进度**：[工作进度记录.md](md文档/工作进度记录.md)  
-**查看实验结果**：[results/README.md](results/README.md)
-
-## 环境要求
-
-- Python 3.9
-- Microsoft C++ Build Tools（部分库如 scikit-learn 在 Windows 上编译时需要）
-- GCC / G++ (MinGW) for C++ implementation
-
-## 快速开始
-
-### 1. 安装依赖
-
-在项目根目录打开终端（PowerShell 或 CMD），执行：
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. 运行 C++ 聚类算法
-
-本项目提供了 C++ 实现的 K-Means 算法。
-
-运行脚本（Windows）：
-```bash
-./run.bat
-```
-
-或者手动编译：
-```bash
-g++ src/main.cpp src/csv_reader.cpp src/kmeans.cpp -o main.exe
-./main.exe
-```
-
-程序将读取 `data/student-mat.csv`，执行聚类，并将结果保存至 `output/clustering_results.csv`。
-
-### 3. 项目结构
+## 项目结构
 
 ```
 Graduation_project/
-├── data/           # 原始数据（如 Student Performance Dataset CSV）
-├── src/            # 源代码
-│   ├── main.cpp         # C++ 主程序
-│   ├── kmeans.h/cpp     # K-Means 算法实现
-│   ├── csv_reader.h/cpp # CSV 读取工具
-│   ├── data_loader.py   # Python 数据加载与基本信息统计
-│   └── __init__.py
-├── notebooks/      # 实验性 Jupyter Notebook
-├── output/         # 结果图表与模型
-├── md文档/         # 论文相关文档
-└── requirements.txt
+├── data/               # 数据集
+│   ├── train-data.csv      # 训练集（14,003 条，16 特征）
+│   └── val-data.csv        # 验证集（300 条）
+├── src/                # C++ 聚类算法实现
+│   ├── main.cpp            # 主程序（CLI）
+│   ├── kmeans.h/cpp        # K-Means++ 实现
+│   ├── pso_kmeans.h/cpp    # PSO-KMeans 实现
+│   └── csv_reader.h/cpp    # CSV 读取工具
+├── scripts/            # Python 实验与可视化脚本
+├── output/             # 算法中间输出（CSV/PNG）
+├── results/            # 论文最终图表（300 DPI PNG）
+├── md/                 # 论文文档（git submodule）
+└── 论文_images/         # 从论文 docx 提取的插图
 ```
 
-### 4. 使用 Python 数据加载模块
+## 环境要求
 
-```python
-from src.data_loader import load_and_inspect, load_student_data
+- Python 3.9+
+- GCC / G++ (MinGW, C++17) — 用于 C++ 实现
+- 依赖：`pip install -r requirements.txt`
 
-# 加载并查看概览
-df = load_and_inspect("data/student_performance.csv")
+## 快速开始
 
-# 仅加载数据
-df = load_student_data("data/student_performance.csv", encoding="utf-8")
+### C++ 聚类算法
+
+```bash
+g++ -std=c++17 -Isrc src/main.cpp src/csv_reader.cpp src/kmeans.cpp src/pso_kmeans.cpp -o main.exe
+./main.exe --data data/train-data.csv --algo pso-kmeans --k 4
 ```
 
-### 5. 数据准备
+可选参数见 `./main.exe --help`。
 
-从 [Kaggle Student Performance Dataset](https://www.kaggle.com/datasets) 等平台获取学生成绩 CSV，放入 `data/` 目录。文件编码建议为 UTF-8。
+### Python 实验脚本
 
-## 主要依赖
+```bash
+# 生成论文图表
+python scripts/relabel_charts.py
+python scripts/chapter45_viz.py
+python scripts/regen_figs.py
+```
 
-| 库 | 版本 | 用途 |
-|----|------|------|
-| pandas | 1.4.2 | 数据读取、清洗、特征工程 |
-| numpy | 1.21.5 | 数值计算 |
-| scikit-learn | 1.0.2 | K-Means、聚类评估 |
-| matplotlib | 3.5.1 | 可视化 |
-| seaborn | 0.11.2 | 可视化 |
-| scipy | - | 优化与距离计算 |
-| joblib | - | 并行加速 |
+## 数据集
+
+特征列：StudyHours, Attendance, Resources, Extracurricular, Motivation, Internet, Gender, Age, LearningStyle, OnlineCourses, Discussions, AssignmentCompletion, ExamScore, EduTech, StressLevel, FinalGrade
+
+## 算法性能（k=4，训练集）
+
+| 算法 | SSE | Silhouette | 运行时间 |
+|------|-----|-----------|---------|
+| K-Means | 24272.67 | 0.1127 | 0.060s |
+| K-Means++ | 24159.62 | 0.0894 | 0.135s |
+| PSO-KMeans | 24538.18 | 0.0939 | 0.924s |
+
+## 论文文档
+
+论文相关文档位于 `md/` 子模块（独立仓库）。

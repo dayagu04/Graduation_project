@@ -16,7 +16,12 @@
       "Bash(python scripts/feature_engineering.py --dataset train)",
       "Bash(python scripts/feature_engineering.py --dataset val)",
       "Bash(python scripts/cluster_experiments.py --mode val --k-min 2 --k-max 6 --compare-k 3,4,5)",
-      "Bash(python scripts/cluster_experiments.py --mode train --k-min 2 --k-max 8 --compare-k 3,4,5)"
+      "Bash(python scripts/cluster_experiments.py --mode train --k-min 2 --k-max 8 --compare-k 3,4,5)",
+      "Bash(python -c \"from scripts.pso_kmeans import PSOKMeans; print\\('PSOKMeans OK'\\)\")",
+      "Bash(python scripts/cluster_experiments.py --mode val --k-min 2 --k-max 8 --compare-k 3,4,5)",
+      "Bash(python scripts/stability_experiment.py)",
+      "Bash(python scripts/generate_cluster_profiles.py)",
+      "Bash(python -c ' *)"
     ]
   }
 }

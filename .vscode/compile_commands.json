@@ -1,0 +1,17 @@
+[
+    {
+        "directory": "n:/cpp_project/Graduation_project",
+        "command": "g++ -std=c++17 -Isrc -c src/csv_reader.cpp -o src/csv_reader.o",
+        "file": "src/csv_reader.cpp"
+    },
+    {
+        "directory": "n:/cpp_project/Graduation_project",
+        "command": "g++ -std=c++17 -Isrc -c src/kmeans.cpp -o src/kmeans.o",
+        "file": "src/kmeans.cpp"
+    },
+    {
+        "directory": "n:/cpp_project/Graduation_project",
+        "command": "g++ -std=c++17 -Isrc -c src/main.cpp -o src/main.o",
+        "file": "src/main.cpp"
+    }
+]

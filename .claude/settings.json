@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/feature_viz.py)",
+      "Bash(python scripts/chapter45_viz.py)",
+      "Bash(python scripts/radar_overlay.py)",
+      "Bash(python scripts/chapter4_extra_viz.py)",
+      "Bash(python scripts/system_architecture.py)"
+    ]
+  }
+}
